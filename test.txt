@@ -1,9 +1,10 @@
 this is a test
-nice to meet you here£¡
+nice to meet you hereï¿½ï¿½
 hello world
-today is sunny
+today is sunny!
 fine
 nice
+
 
 
 

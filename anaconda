@@ -1,0 +1,62 @@
+[root@localhost ~]# cd download/
+[root@localhost download]# wget https://repo.anaconda.com/archive/Anaconda3-5.2.0-Linux-x86_64.sh
+
+
+firewall-cmd --zone=public --add-port=8000/tcp --permanent
+
+https://docs.anaconda.com/anaconda/user-guide/getting-started
+https://conda.io/docs/user-guide/getting-started.html
+
+http://nginx.org/download/nginx-1.15.3.tar.gz
+
+即端口号已经被占用,说明servr已经在运行了(也有可能在后台运行)
+或者最简单的解决方法就是：
+在终端输入 sudo fuser -k 8000/tcp
+这样和端口8000相关的进程就都关了。
+
+Windows10Hyper-V下CentOS虚拟机配置静态ip
+关键是桥接 设置网桥
+如果使用的是dhcp,则不需要设置桥接网桥
+https://jingyan.baidu.com/article/08b6a591848aa814a8092285.html
+
+pure
+https://www.purecss.cn/layouts.html
+Bootstrap、Foundation、Semantic UI、Pure和UIkit的对比说明
+https://www.sunjs.com/article/detail/6ec78db2139a468d933c40ed38322ecf.html
+===============
+
+[root@localhost ~]# conda --version
+conda 4.5.4
+
+conda create --name wagtail
+
+[root@localhost ~]# source activate wagtail
+(wagtail) [root@localhost ~]# 
+
+
+nginx设置
+
+    upstream ntmvc{
+        server localhost:8000;
+    }
+
+    server {
+        listen       80;
+        server_name  localhost;
+
+      
+
+        location / {
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_pass http://ntmvc;
+        }
+        
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+      }
+
+
+

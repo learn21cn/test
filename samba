@@ -1,0 +1,33 @@
+1 安装
+sudo apt-get install samba  
+
+2 配置
+打开Samba配置文件： view plain copy
+
+sudo gedit /etc/samba/smb.conf  
+在其最后添加：
+
+[share]  
+    path = /home/用户名/download 
+    valid users = share
+    available = yes  
+    browseable = yes  
+    writable = yes  
+    public = no  
+    
+3 创建Samba用户
+
+sudo useradd share 
+sudo smbpasswd -a share 
+    根据提示深入用户密码(登陆Samba共享目录的时候需要)。
+
+4 重启Samba view plain copy
+
+sudo service smbd restart
+
+5 使用
+
+    在Windows电脑上，输入“\\地址\share”，然后输入用户名（share）和密码后，既可以访问了
+    注意download文件夹的权限也要设置一下
+    
+ 

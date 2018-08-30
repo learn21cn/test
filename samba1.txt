@@ -5,6 +5,10 @@ rpm -qi samba
 yum install samba
 
 
+
+
+
+
 useradd sambauser
 
 passwd sambauser
@@ -56,3 +60,83 @@ firewall-cmd --reload
 https://jingyan.baidu.com/article/f3ad7d0f2ea14409c2345b69.html
 
 https://www.linuxidc.com/Linux/2017-11/148354.htm
+
+
+samba文件服务器
+yum -y install samba samba-client samba-common
+
+samba的守护进程
+smbd：提供对服务器中文件、打印资源的共享访问 139 145
+nmbd：提供基于NetBIOS名称的解析 137 138
+启动
+systemctl restart smb.service
+systemctl restart nmb.service
+
+
+gpasswd -a sambauser root
+chmod 775 /public/
+
+user级别访问
+1、修改配置文件
+[global]
+        workgroup = MYGROUP
+        server string = Samba Server Version %v        
+        security = user  
+[homes]
+        comment = Home Directories
+        browseable = no
+        writable = yes      
+[public]
+        comment = Learning  Directories
+        #备注
+        browseable = yes
+        #是否可见，不可见的话要在地址栏手工输入文件夹名才可见
+        writable = yes
+        #写权限与下面的目录权限都允许才可以
+        path = /public
+        write list = sambauser
+        #限制可以上传的用户
+2、建立共享目录，添加用户
+mkdir /public
+[root@localhost ~]# useradd sambauser
+[root@localhost ~]# passwd sambauser
+更改用户 sambauser 的密码 。
+新的 密码：
+123
+passwd：所有的身份验证令牌已经成功更新。
+#添加samba密码
+[root@localhost ~]# smbpasswd -a sambauser
+New SMB password:
+Retype new SMB password:
+Added user sambauser.
+#权限
+chown sambauser /public/
+（多个用户个使用组设置权限
+gpasswd -a userb root
+chmod 775 /public/
+）
+#密码
+smbpasswd -a 系统用户名
+使用系统用户名和samba密码登录，即必须是系统用户但不是系统密码
+（如果想访问上传，linux系统权限需要允许，samba服务权限需要允许）
+3、启动服务
+systemctl restart smb.service
+systemctl restart nmb.service
+4、关于SElinux与samba，执行以下
+setsebool -P samba_domain_controller on
+setsebool -P samba_enable_home_dirs on
+setsebool -P samba_export_all_ro on
+#只读
+setsebool -P samba_export_all_rw on
+#读写
+5、防火墙
+一种方法是关闭防火墙
+ systemctl stop firewalld.service
+ setenforce 0
+二方法是添加规则
+firewall-cmd --permanent --zone=public --add-service=samba
+firewall-cmd --reload
+
+
+
+

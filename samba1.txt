@@ -1,0 +1,58 @@
+# 查询是否已经安装了Samba
+rpm -qi samba
+
+# 安装
+yum install samba
+
+
+useradd sambauser
+
+passwd sambauser
+
+
+mkdir /home/sambauser/usershare
+
+chmod -R 777 /home/sambauser/usershare
+
+cd /etc/samba
+
+cp smb.conf smb.conf.bak
+
+[usershare]
+        comment = User Share Directories
+        valid users = sambauser, root
+        browseable = yes
+        writable = yes
+        read only = No
+        inherit acls = Yes
+        create mask = 0664
+        directory mask = 0775
+        
+[mysite]
+        comment = Root Share Directories
+        valid users = root
+        browseable = yes
+        writable = yes
+        read only = No
+        inherit acls = Yes
+        create mask = 0664
+        directory mask = 0775
+
+
+systemctl start smb
+
+
+firewall-cmd --permanent --add-port=137/tcp
+firewall-cmd --permanent --add-port=138/tcp
+firewall-cmd --permanent --add-port=139/tcp
+firewall-cmd --permanent --add-port=445/tcp
+firewall-cmd --permanent --add-port=901/tcp
+firewall-cmd --add-rich-rule 'rule family="ipv4" source address="172.28.144.145" accept' --permanent
+firewall-cmd --reload
+
+!qw12$?
+
+
+https://jingyan.baidu.com/article/f3ad7d0f2ea14409c2345b69.html
+
+https://www.linuxidc.com/Linux/2017-11/148354.htm

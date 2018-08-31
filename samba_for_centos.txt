@@ -1,0 +1,111 @@
+# 查询是否已经安装了Samba
+rpm -qi samba
+
+# 安装
+yum -y install samba samba-client samba-common
+
+# 添加一个新用户
+useradd sambauser
+
+# 这一步是设置用户登录linux系统的密码
+# 如果只是作为samba访问账号，则不是必须的
+passwd sambauser
+
+# 设置访问共享文件夹的sammba账号密码
+# 是系统用户但不是系统密码，这一步是必须的
+smbpasswd -a sambauser
+# 激活账号
+smbpasswd -e sambauser
+
+# 建立共享文件夹
+mkdir /public
+
+#权限
+chown sambauser /public/
+# 如果是多个用户，则使用组设置权限
+例如将anotheruser添加到sambauser所在的sambauser组
+gpasswd -a userb sambauser
+# 这个访问权限比较重要
+chmod 775 /public/
+
+# 备份修改配置文件 
+cd /etc/samba
+cp smb.conf smb.conf.bak
+vim smb.conf
+
+# 修改如下
+[global]
+        workgroup = MYGROUP
+        server string = Samba Server Version %v        
+        security = user  
+[homes]
+        comment = Home Directories
+        browseable = no
+        writable = yes      
+[public]
+        # 备注
+        comment = Learning  Directories
+        # 是否可见，不可见的话要在地址栏手工输入文件夹名才可见
+        browseable = yes
+        # 写权限与下面的目录权限都允许才可以
+        writable = yes
+        # 共享文件夹
+        path = /public
+        # 限制可以上传的用户
+        write list = sambauser        
+        
+# 以上为smb.conf的内容
+        
+# 启动服务
+systemctl restart smb.service
+systemctl restart nmb.service
+
+# samba的守护进程
+# smbd：提供对服务器中文件、打印资源的共享访问，端口：139 145
+# nmbd：提供基于NetBIOS名称的解析，端口：137 138
+
+4、关于SElinux与samba，执行以下
+setsebool -P samba_domain_controller on
+setsebool -P samba_enable_home_dirs on
+# 读写，一般不是下面的只读
+setsebool -P samba_export_all_rw on
+# 只读
+# setsebool -P samba_export_all_ro on
+
+# 防火墙设置
+# 一种方法是关闭防火墙，更好的方法是添加规则
+# 不必单开上面的端口
+firewall-cmd --permanent --zone=public --add-service=samba
+firewall-cmd --reload
+
+#重启
+systemctl restart smb.service
+systemctl restart nmb.service
+
+
+!qw12$?
+https://jingyan.baidu.com/article/f3ad7d0f2ea14409c2345b69.html
+https://www.linuxidc.com/Linux/2017-11/148354.htm
+
+# 其他
+# 开端口
+firewall-cmd --permanent --add-port=137/tcp
+firewall-cmd --permanent --add-port=138/tcp
+firewall-cmd --permanent --add-port=139/tcp
+firewall-cmd --permanent --add-port=445/tcp
+firewall-cmd --permanent --add-port=901/tcp
+# 允许特定ip
+firewall-cmd --add-rich-rule 'rule family="ipv4" source address="172.28.144.145" accept' --permanent
+firewall-cmd --reload
+
+# 从groupname中删除testuser用户
+gpasswd groupname -d testuser
+# 查看用户所在组
+groups admin
+
+
+
+
+
+
+

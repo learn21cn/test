@@ -2,8 +2,7 @@
 sudo apt-get install samba  
 
 2 配置
-打开Samba配置文件： view plain copy
-
+打开Samba配置文件：
 sudo gedit /etc/samba/smb.conf  
 在其最后添加：
 
@@ -26,7 +25,6 @@ sudo smbpasswd -a share
 sudo service smbd restart
 
 5 使用
-
     在Windows电脑上，输入“\\地址\share”，然后输入用户名（share）和密码后，既可以访问了
     注意download文件夹的权限也要设置一下
     

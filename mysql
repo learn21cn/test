@@ -1,0 +1,72 @@
+DATABASES = {
+    'default': dj_database_url.config(),
+    'thedbname': {
+        'NAME': 'thedbname',
+        'ENGINE': 'django.db.backends.mysql',
+        'USER': 'thedbuser',
+        'PASSWORD': '***',
+        'HOST': 'myhost',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        },
+    }
+}
+
+
+直接安装
+https://blog.csdn.net/z13615480737/article/details/78906598
+https://www.cnblogs.com/bigbrotherer/p/7241845.html
+解压安装
+https://www.cnblogs.com/YangshengQuan/p/8431520.html
+
+mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY 'new password';
+或者 
+mysql> set password=password('&$edu21CN');
+
+设置远程访问账号:grant all privileges on . to 远程访问用户名@’%’ identified by ‘用户密码’;
+增加root用户指定可以任意IP登录，如果想限制只能让指定IP登录请把%替换成IP地址
+mysql> grant all privileges on *.* to root@'%' identified by '密码';
+
+刷新:
+mysql> flush privileges;
+
+mysql> create database if not exists testdb
+
+检查mysql是否启动
+ps -ef|grep mysql
+
+修改MySQL的登录设置：
+vi /etc/my.cnf
+
+[mysql]
+default-character-set=utf8
+
+[mysqld]
+default-storage-engine=INNODB
+character_set_server=utf8
+
+字符
+https://blog.csdn.net/weixin_40539892/article/details/80227981
+https://blog.csdn.net/Miss_Audrey/article/details/80018269
+ALTER DATABASE db_name DEFAULT CHARACTER SET character_name [COLLATE ...];
+
+ALTER DATABASE testdb DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+ALTER TABLE blog_blogpage CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+firewall-cmd --zone=public --add-port=3306/tcp --permanent
+firewall-cmd --reload
+
+
+https://stackoverflow.com/questions/26719088/django-1-7-blank-charfield-textfield-convention
+1) Provide a one-off default now (will be set on all existing rows with a null value for this column)
+2) Quit, and let me add a default in models.py
+  1) Provide a one-off default now (will be set on all existing rows)
+so just press 1, and provide '' (the empty string) as value.
+
+or specify default='' in the models.py, as suggested:
+
+ 2) Quit, and let me add a default in models.py
+ 
+ 
+ https://blog.csdn.net/qq_37587216/article/details/79962050
+ 
